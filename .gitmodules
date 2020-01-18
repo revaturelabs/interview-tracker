@@ -1,9 +1,12 @@
 [submodule "front-end"]
 	path = front-end
 	url = https://github.com/revaturelabs/interview-tracker-frontend.git
+	branch = 1911-trevin-front-end-dev
 [submodule "interview-service"]
 	path = interview-service
 	url = https://github.com/revaturelabs/interview-service.git
+	branch = 1911-Trevin-dev
 [submodule "dev-services"]
 	path = dev-services
 	url = https://github.com/revaturelabs/interview-tracker-dev-services.git
+	branch = 1911-Trevin-dev
