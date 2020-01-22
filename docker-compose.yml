@@ -2,7 +2,7 @@ version: '3.5'
 services:
     front-end:
         container_name: front_end # Container name
-        build: ./Front-End/interview-tracker-frontend # Location of our Dockerfile
+        build: ./front-end # Location of our Dockerfile
         volumes: # Volume binding
         - './angulardockerproject:/usr/src/app' 
         ports: 
@@ -46,7 +46,7 @@ services:
             
     interview-service:
         container_name: interview_service
-        build: ./Interview-Service/interview-service
+        build: ./interview-service
         ports:
         - 8771:50222
         depends_on: 
