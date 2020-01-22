@@ -8,9 +8,9 @@ services:
         ports: 
         - 4200:4200 # Port mapping
         depends_on: 
-        - interview-service
+        #- interview-service
         #- user-service
-        #- api-gateway
+        - api-gateway
     service-registry:
         container_name: service_registry
         build: ./dev-services/ServiceRegistery
@@ -18,6 +18,8 @@ services:
         - 8761:8761
         environment:
             eureka.client.serviceUrl.defaultZone: http://service-registry:8761/eureka/
+            eureka.client.registerWithEureka: 'false'
+            eureka.client.fetchRegistry: 'false'
         depends_on: 
         - pg_database_user
     api-gateway:
@@ -28,14 +30,14 @@ services:
         environment:
             eureka.client.serviceUrl.defaultZone: http://service-registry:8761/eureka/
         depends_on: 
-        - service-registry
+        - interview-service
     user-service:
         container_name: user_service
         build: ./dev-services/User-Service
         ports:
         - 8770:50111
         depends_on: 
-        - api-gateway
+        - service-registry
         environment:
             eureka.client.serviceUrl.defaultZone: http://service-registry:8761/eureka/
             SPRING_DATASOURCE_URL: jdbc:postgresql://pg_database_user:5432/userDB
