@@ -1,0 +1,91 @@
+version: '3.5'
+services:
+    front-end:
+        container_name: front_end # Container name
+        build: ./front-end # Location of our Dockerfile
+        volumes: # Volume binding
+        - './angulardockerproject:/usr/src/app' 
+        ports: 
+        - 4200:4200 # Port mapping
+        depends_on: 
+        #- interview-service
+        #- user-service
+        - api-gateway
+    service-registry:
+        container_name: service_registry
+        build: ./dev-services/ServiceRegistery
+        ports:
+        - 8761:8761
+        environment:
+            eureka.client.serviceUrl.defaultZone: http://service-registry:8761/eureka/
+            eureka.client.registerWithEureka: 'false'
+            eureka.client.fetchRegistry: 'false'
+        depends_on: 
+        - pg_database_user
+    api-gateway:
+        container_name: api-gateway
+        build: ./dev-services/APIGateway
+        ports:
+        - 8765:8765
+        environment:
+            eureka.client.serviceUrl.defaultZone: http://service-registry:8761/eureka/
+        depends_on: 
+        - interview-service
+    user-service:
+        container_name: user_service
+        build: ./dev-services/User-Service
+        ports:
+        - 8770:50111
+        depends_on: 
+        - service-registry
+        environment:
+            eureka.client.serviceUrl.defaultZone: http://service-registry:8761/eureka/
+            SPRING_DATASOURCE_URL: jdbc:postgresql://pg_database_user:5432/userDB
+            SPRING_DATASOURCE_USERNAME: postgres
+            SPRING_DATASOURCE_PASSWORD: password
+            SPRING_DATASOURCE_DRIVER-CLASS-NAME: org.postgresql.Driver
+            SPRING_JPA_DATABASE-PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+            
+    interview-service:
+        container_name: interview_service
+        build: ./interview-service
+        ports:
+        - 8771:50222
+        depends_on: 
+        - user-service
+        environment:
+            eureka.client.serviceUrl.defaultZone: http://service-registry:8761/eureka/
+            SPRING_DATASOURCE_URL: jdbc:postgresql://pg_database_interview:5432/interviewDB
+            #SPRING_DATASOURCE_URL: jdbc:postgresql://pg_database_user:5432/userDB
+            SPRING_DATASOURCE_USERNAME: postgres
+            SPRING_DATASOURCE_PASSWORD: password
+            SPRING_DATASOURCE_DRIVER-CLASS-NAME: org.postgresql.Driver
+            SPRING_JPA_DATABASE-PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+            
+    pg_database_user:
+        container_name: pg_database_user
+        image: postgres:alpine
+        volumes:
+        - postgres_volume:/var/lib/postgresql/user/data
+        environment:
+        - POSTGRES_PASSWORD=password
+        - POSTGRES_USER=postgres
+        - POSTGRES_DB=userDB
+        ports:
+        - 5433:5432
+        depends_on: 
+        - pg_database_interview
+    pg_database_interview:
+        container_name: pg_database_interview
+        image: postgres:alpine
+        volumes:
+        - postgres_volume_int:/var/lib/postgresql/interview/data
+        environment:
+        - POSTGRES_PASSWORD=password
+        - POSTGRES_USER=postgres
+        - POSTGRES_DB=interviewDB
+        ports:
+        - 5432:5432
+volumes: 
+    postgres_volume:
+    postgres_volume_int:
