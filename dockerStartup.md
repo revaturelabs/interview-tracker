@@ -2,7 +2,7 @@ Getting Started Docker Version
 
 If you dont have windows 10 pro or enterprise
 -------
-navigate to docs.docker.com/toolbox/toolbox-install_windows/
+navigate to docs.docker.com/toolbox/toolbox_install_windows/
 
 You might have to enable virtualization in your bios
 
